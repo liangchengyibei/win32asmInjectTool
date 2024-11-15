@@ -1,0 +1,38 @@
+1、使用vs rc 创建视图d
+2、调用对话框函数，创建对话框，编译链接资源文件
+3、修改资源文件，完善DialogBoxParam参数
+4、使用richedit 接收代码 坑：加载riched20dll 的代码不能在initdialog内部
+要放在调用dialogBoxParam之前
+5、完成边缘功能：
+0x00： 遍历进程列表，选择目标进程
+0x01：将选中的进程模块名展示到编辑框
+0x02：注入按钮可以获取该进程的名字
+0x03：将richedit中的内存读取到缓冲区留待汇编
+即调查edit 、richedit的使用
+
+实际工作：
+响应sec process按钮，创建列表框，用来选择进程
+在数组寻址时，用ecx做index，在运算中莫名其妙被某个函数改变了，导致寻址失败 
+多做api调用失败检测，可以避免99%的错误
+messagebox之所以总是关不掉，是因为对话框过程和窗口过程不一样，
+我错误的在对话框过程中调用了defWinPro
+现在，我怀疑列表框出问题，也是因为这个
+列表框出问题，我选择绕过这个问题，直接新建个子对话框，在子对话框中使用静态创建控件
+从而避免动态创建列表框带来的问题
+LB_GETCURSEL
+LB_GETTEXT
+
+使用xedParse汇编edit的代码
+调用XEDParseAssemble 传入一个结构指针，那个b结构真是给我坑麻了啊
+最后是我vs调的，人工填充了XEDPARSE 结构才跑通
+
+pBuf中的数据是这样的：
+push xxxx
+call xxxx "\n"
+这样我可以检测回车符，来切分指令
+汇编后将指令存入另一个缓冲区
+
+push eax
+push ebx
+push ecx
+
